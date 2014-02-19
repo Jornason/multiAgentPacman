@@ -161,47 +161,21 @@ class MinimaxAgent(MultiAgentSearchAgent):
             return minValue(state, depth, depth % state.getNumAgents())
 
         def maxValue(state, depth, agentIndex):
-          if len(state.getLegalActions(agentIndex)) == 0:
-            return self.evaluationFunction(state)
           return reduce(max, map(lambda x: findValue(state.generateSuccessor(agentIndex, x), depth-1), state.getLegalActions(agentIndex)))
 
         def minValue(state, depth, agentIndex):
-          if len(state.getLegalActions(agentIndex)) == 0:
-            return self.evaluationFunction(state)
           return reduce(min, map(lambda x: findValue(state.generateSuccessor(agentIndex, x), depth-1), state.getLegalActions(agentIndex)))
 
         maxV = -float('inf')
         minimaxAction = 0
         if gameState.isWin() or gameState.isLose():
-          return 
+          return self.evaluationFunction(gameState)
         for action in gameState.getLegalActions(0):
           value = findValue(gameState.generateSuccessor(0, action), self.depth*gameState.getNumAgents()-1) 
           if value > maxV:
             minimaxAction = action
             maxV = value
         return minimaxAction
-        return findValue(gameState, self.depth * gameState.getNumAgents())
-
-        util.raiseNotDefined()
-
-    def findValue(self, state, depth, agentIndex):
-      if depth == 0:
-        return 0
-      if agentIndex == state.getNumAgents():
-        agentIndex = 0
-        depth -= 1
-        if depth == 0:
-          return self.evaluationFunction(state, )
-        return maxValue(state, depth, agentIndex)
-      else:
-        return minValue(state, depth, agentIndex)
-
-    def maxValue(self, state, depth, agentIndex):
-      v = -float('inf')
-      for action in state.getLegalActions(agentIndex):
-        v = max(v, value(state, depth, agentIndex + 1))
-      return v
-
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
