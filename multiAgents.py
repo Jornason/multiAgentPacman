@@ -16,6 +16,7 @@
 from util import manhattanDistance
 from game import Directions
 import random, util
+from operator import add
 
 from game import Agent
 
@@ -245,7 +246,33 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           All ghosts should be modeled as choosing uniformly at random from their
           legal moves.
         """
-        "*** YOUR CODE HERE ***"
+        
+        def findValue(state, depth):
+          if state.isWin() or state.isLose():
+            return self.evaluationFunction(state)
+          if depth == self.depth*state.getNumAgents():
+            return self.evaluationFunction(state)
+          if depth % state.getNumAgents() == 0:
+            return maxValue(state, depth, depth % state.getNumAgents())
+          else:
+            return minValue(state, depth, depth % state.getNumAgents())
+
+        def maxValue(state, depth, agentIndex):
+          return reduce(max, map(lambda x: findValue(state.generateSuccessor(agentIndex, x), depth+1), state.getLegalActions(agentIndex)))
+
+        def minValue(state, depth, agentIndex):
+          return reduce(add, map(lambda x: findValue(state.generateSuccessor(agentIndex, x), depth+1), state.getLegalActions(agentIndex))) / len(state.getLegalActions(agentIndex))
+
+        maxV = -float('inf')
+        minimaxAction = 0
+        if gameState.isWin() or gameState.isLose():
+          return self.evaluationFunction(gameState)
+        for action in gameState.getLegalActions(0):
+          value = findValue(gameState.generateSuccessor(0, action), 1) 
+          if value > maxV:
+            minimaxAction = action
+            maxV = value
+        return minimaxAction
         util.raiseNotDefined()
 
 def betterEvaluationFunction(currentGameState):
