@@ -80,21 +80,22 @@ class ReflexAgent(Agent):
         # print "newScaredTimes", newScaredTimes
 
         foodDistance = 0
+        closestFood = 10000000
         for x in range(newFood.width):
           for y in range(newFood.height):
             if newFood[x][y]:
-              foodDistance += manhattanDistance(newPos, (x, y))
-
-
+              distance = manhattanDistance(newPos, (x, y))
+              foodDistance += distance
+              if distance < closestFood:
+                closestFood = distance
         ghostDistance = 0
         for ghost in newGhostStates:
           ghostDistance += manhattanDistance(newPos, ghost.getPosition())
         if ghostDistance < 2:
           return -100000000000
-        # print foodDistance, 10/ghostDistance**2
-        # util.pause()
-        return (-foodDistance - 1150/(ghostDistance)**2 + successorGameState.getScore()**3) 
-        return successorGameState.getScore()
+        if foodDistance < 2:
+          return 100000000000
+        return (- foodDistance - 10*closestFood**2 - 10/(ghostDistance)**2 + successorGameState.getScore()**3) 
 
 def scoreEvaluationFunction(currentGameState):
     """
