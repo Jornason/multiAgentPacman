@@ -15,6 +15,8 @@
 
 from util import manhattanDistance
 from game import Directions
+# from searchAgents import mazeDistance
+import searchAgents
 import random, util
 from operator import add
 
@@ -284,8 +286,52 @@ def betterEvaluationFunction(currentGameState):
 
       DESCRIPTION: <write something here so we know what you did>
     """
-    "*** YOUR CODE HERE ***"
+    # Useful information you can extract from a GameState (pacman.py)
+    successorGameState = currentGameState # .generatePacmanSuccessor(action)
+    newPos = successorGameState.getPacmanPosition()
+    newFood = successorGameState.getFood()
+    newGhostStates = successorGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+    # print "New position", newPos
+    # print "new Food", newFood
+    # print "new Ghost States", newGhostStates
+    # print "newScaredTimes", newScaredTimes
+
+    foodDistance = 0
+    closestFood = (1000, 1000)
+    for x in range(newFood.width):
+      for y in range(newFood.height):
+        if newFood[x][y]:
+          distance = manhattanDistance(newPos, (x, y))
+          foodDistance += distance
+          if distance < manhattanDistance(closestFood, newPos):
+            closestFood = (x, y)
+    if closestFood != (1000, 1000):
+      closestFood = searchAgents.mazeDistance(closestFood, newPos, successorGameState)
+    ghostDistance = 0
+    for ghost in newGhostStates:
+      ghostDistance += manhattanDistance(newPos, ghost.getPosition())
+    if ghostDistance < 2:
+      return -100000000000
+    elif foodDistance == 0:
+      return 100000000 * successorGameState.getScore()
+    if foodDistance == 2:
+      return 1000000 * successorGameState.getScore()
+    elif foodDistance == 1:
+      return 10000000 * successorGameState.getScore()
+    # if closestFood == foodDistance:
+    #   return 10000000000000
+    # if foodDistance == 0:
+    #   return 100000000000
+    # elif foodDistance < 4:
+    #   return 100000000000 / (foodDistance * successorGameState.getScore())
+    return (- foodDistance - 10*closestFood**2 - 10/(ghostDistance)**2 + successorGameState.getScore()**3) 
     util.raiseNotDefined()
+
+
+
+
 
 # Abbreviation
 better = betterEvaluationFunction
