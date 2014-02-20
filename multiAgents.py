@@ -287,16 +287,11 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     # Useful information you can extract from a GameState (pacman.py)
-    successorGameState = currentGameState # .generatePacmanSuccessor(action)
-    newPos = successorGameState.getPacmanPosition()
-    newFood = successorGameState.getFood()
-    newGhostStates = successorGameState.getGhostStates()
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+    newGhostStates = currentGameState.getGhostStates()
     newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-
-    # print "New position", newPos
-    # print "new Food", newFood
-    # print "new Ghost States", newGhostStates
-    # print "newScaredTimes", newScaredTimes
+    score = currentGameState.getScore()
 
     foodDistance = 0
     closestFood = (1000, 1000)
@@ -308,29 +303,25 @@ def betterEvaluationFunction(currentGameState):
           if distance < manhattanDistance(closestFood, newPos):
             closestFood = (x, y)
     if closestFood != (1000, 1000):
-      closestFood = searchAgents.mazeDistance(closestFood, newPos, successorGameState)
+      closestFood = searchAgents.mazeDistance(closestFood, newPos, currentGameState)
     ghostDistance = 0
     for ghost in newGhostStates:
       ghostDistance += manhattanDistance(newPos, ghost.getPosition())
     if ghostDistance < 2:
       return -100000000000
     elif foodDistance == 0:
-      return 100000000 * successorGameState.getScore()
+      return 100000000 * score
     if foodDistance == 2:
-      return 1000000 * successorGameState.getScore()
+      return 1000000 * score
     elif foodDistance == 1:
-      return 10000000 * successorGameState.getScore()
-    # if closestFood == foodDistance:
-    #   return 10000000000000
-    # if foodDistance == 0:
-    #   return 100000000000
-    # elif foodDistance < 4:
-    #   return 100000000000 / (foodDistance * successorGameState.getScore())
-    return (- foodDistance - 10*closestFood**2 - 10/(ghostDistance)**2 + successorGameState.getScore()**3) 
-    util.raiseNotDefined()
+      return 10000000 * score
 
-
-
+    value = 0
+    value += - foodDistance
+    value += - 10*closestFood**2
+    value += - 10/ghostDistance**2
+    value += score**3
+    return value
 
 
 # Abbreviation
