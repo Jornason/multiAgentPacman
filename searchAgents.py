@@ -38,6 +38,7 @@ Good luck and happy searching!
 from game import Directions
 from game import Agent
 from game import Actions
+from math import ceil
 import util
 import time
 import search
@@ -621,6 +622,8 @@ def mazeDistance(point1, point2, gameState):
     """
     x1, y1 = point1
     x2, y2 = point2
+    x2 = int(ceil(x2))
+    y2 = int(ceil(y2))
     walls = gameState.getWalls()
     assert not walls[x1][y1], 'point1 is a wall: ' + point1
     assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
